@@ -7,13 +7,22 @@ public class TEDealer extends Dealer {
     private double deposit;
 
     public TEDealer() {
+        super(2);
     }
 
     public void payOut(double money) {
-        // TODO:
+        this.deposit -= money;
     }
 
     public void accumulate(double money) {
-        // TODO:
+        this.deposit += money;
+    }
+
+    public double getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(double deposit) {
+        this.deposit = deposit;
     }
 }
