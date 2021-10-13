@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,12 @@ public class HitAction implements CardGameAction {
      */
     @Override
     public List<Card> act(Dealer dealer, List<HandCard> handCards) {
-        // TODO:
-        return null;
+        List<Card> addedCard = new ArrayList<>();
+        for (HandCard hc : handCards) {
+            Card c = dealer.deal();
+            hc.addCard(c);
+            addedCard.add(c);
+        }
+        return addedCard;
     }
 }
