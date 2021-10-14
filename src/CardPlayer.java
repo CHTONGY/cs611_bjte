@@ -18,6 +18,10 @@ public class CardPlayer extends Player {
         return deposit;
     }
 
+    public boolean isBankrupt() {
+        return this.deposit < 0;
+    }
+
     public void setDeposit(double deposit) {
         this.deposit = deposit;
     }
