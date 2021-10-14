@@ -19,9 +19,11 @@ public class TEPlayer extends CardPlayer {
         this.actionMap.put("stand", new StandAction());
     }
 
-    public List<Card> hit(TEDealer teDealer) {
+    public Card hit(TEDealer teDealer) {
         // te player only has one handcard, so we can just pass the handcard list to act method
-        return this.actionMap.get("hit").act(teDealer, this.getHandCardList());
+        Card hitCard = this.actionMap.get("hit").act(teDealer, this.getHandCardList()).get(0);
+        dealFaceValue(hitCard);
+        return hitCard;
     }
 
     public void stand(TEDealer teDealer) {
@@ -30,5 +32,34 @@ public class TEPlayer extends CardPlayer {
 
     public void cashOut() {
         this.isCashOut = true;
+    }
+
+    private void dealFaceValue(Card card) {
+        String cardSymbol = card.getSymbol();
+        if (cardSymbol.equalsIgnoreCase("A")) {
+            boolean hasA = false;
+            List<Card> cards = this.getHandCardList().get(0).getHandCardList();
+            for (Card c : cards) {
+                if (c.getSymbol().equalsIgnoreCase("A")) {
+                    hasA = true;
+                    break;
+                }
+            }
+            if (hasA) {
+                card.setFaceValue(11);
+            } else if (this.getHandCardList().get(0).getTotalPoints() + 11 <= 31) {
+                card.setFaceValue(11);
+            } else {
+                card.setFaceValue(1);
+            }
+        } else if (cardSymbol.equalsIgnoreCase("J") ||
+                cardSymbol.equalsIgnoreCase("Q") ||
+                cardSymbol.equalsIgnoreCase("K")) {
+            card.setFaceValue(10);
+        } else {
+            card.setFaceValue(Integer.valueOf(cardSymbol));
+        }
+        this.getHandCardList().get(0).calTotalPoints();
+        this.getHandCardList().get(0).updateBusted();
     }
 }
