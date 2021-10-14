@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ public class CardPlayer extends Player {
 
     public CardPlayer(int id) {
         super(id);
+        this.handCardList = new ArrayList<>();
     }
 
     public double getDeposit() {
@@ -19,7 +21,7 @@ public class CardPlayer extends Player {
     }
 
     public boolean isBankrupt() {
-        return this.deposit < 0;
+        return this.deposit <= 0;
     }
 
     public void setDeposit(double deposit) {
