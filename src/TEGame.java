@@ -1,15 +1,31 @@
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @className: TEGame
  * @description: class of trianta ena
  * @author: Yan Tong, Fangxu Zhou
  **/
 public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable {
+    private TEDealer teDealer;
+    private List<TEPlayer> tePlayerList;
+    private TEPlayer curPlayer;
+
+    private int curPlayerIndex; // the index of curPlayer in tePlayerList
+
     /**
      * @Description: constructor
      * @Author: Yan Tong
      */
     public TEGame(int playerNum) {
         // TODO:
+        // initialize 1 dealer, num-1 player
+        List<TEPlayer> tePlayerList = new ArrayList<>();
+        for (int i = 1; i < playerNum; i++) {
+            tePlayerList.add(new TEPlayer(i));
+        }
+        this.tePlayerList = tePlayerList;
+        this.teDealer = new TEDealer();
     }
 
     /**
@@ -52,9 +68,9 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
 
     /**
      * @param curPlayer
-     * @Description: change to next player
+     * @Description: change to next player. if all players have done, then return null
      * @Param: T curPlayer: current player
-     * @return: T: next player
+     * @return: T: next player. if no next player, return null
      * @Author: Yan Tong
      */
     @Override
