@@ -71,6 +71,15 @@ public class Dealer {
     }
 
     /**
+     * @Description: reveal all private cards in hand card
+     * @return: the list of all revealed cards
+     * @Author: Yan Tong
+     */
+    public List<Card> revealAllPrivateCard() {
+        return revealCardList();
+    }
+
+    /**
      * @Description: get a card into hand card
      * @return: card that received
      * @Author: Yan Tong
