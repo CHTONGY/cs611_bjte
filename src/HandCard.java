@@ -26,9 +26,15 @@ public class HandCard {
      * @param maxPoint The specific max point. Exceeding it will be considered busted.
      */
     public HandCard(double betAmount, int maxPoint) {
-        if (maxPoint < 1 || betAmount < 0)  throw new IllegalArgumentException("Error: Max point is invalid!");
+        this(maxPoint);
 
+        if (betAmount < 0)  throw new IllegalArgumentException("Error: betAmount is invalid!");
         this.betAmount      = betAmount;
+    }
+
+    public HandCard(int maxPoint) {
+        if (maxPoint < 1)  throw new IllegalArgumentException("Error: maxPoint is invalid!");
+
         this.maxPoint      = maxPoint;
         this.handCardList   = new ArrayList<>();
         this.totalPoints    = 0;
@@ -115,7 +121,7 @@ public class HandCard {
         this.totalPoints = totalPoints;
     }
 
-    private void calTotalPoints() {
+    public void calTotalPoints() {
         int points = 0;
         for (Card card: handCardList) {
             points += card.getFaceValue();
