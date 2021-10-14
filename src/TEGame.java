@@ -18,7 +18,6 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      * @Author: Yan Tong
      */
     public TEGame(int playerNum) {
-        // TODO:
         // initialize 1 dealer, num-1 player
         List<TEPlayer> tePlayerList = new ArrayList<>();
         for (int i = 1; i < playerNum; i++) {
@@ -26,6 +25,8 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         }
         this.tePlayerList = tePlayerList;
         this.teDealer = new TEDealer();
+        this.curPlayerIndex = 0;
+        this.curPlayer = this.tePlayerList.get(0);
     }
 
     /**
@@ -35,8 +36,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public boolean isCardGame() {
-        // TODO:
-        return false;
+        return true;
     }
 
     /**
@@ -46,6 +46,14 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     @Override
     public void play() {
         // TODO:
+        while (true) {
+            if (hasNextRound()) {
+                nextRound();
+            }
+            if (!wantToContinue()) {
+                break;
+            }
+        }
     }
 
     /**
@@ -54,7 +62,8 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void welcome() {
-        // TODO:
+        System.out.printf("Welcome to Trianta Ena. There are %d player(s) and 1 dealer. " +
+                "Enjoy yourselves!\n", this.tePlayerList.size());
     }
 
     /**
@@ -63,7 +72,8 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void init() {
-        // TODO:
+        // do nothing on init process
+        return;
     }
 
     /**
@@ -75,8 +85,10 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public TEPlayer nextTurn(TEPlayer curPlayer) {
-        // TODO:
-        return null;
+        if (this.curPlayerIndex + 1 == this.tePlayerList.size()) {
+            return null;
+        }
+        return this.tePlayerList.get(++this.curPlayerIndex);
     }
 
     /**
@@ -86,8 +98,15 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public boolean hasNextRound() {
-        // TODO:
-        return false;
+        for (TEPlayer tePlayer : this.tePlayerList) {
+            if (tePlayer.isBankrupt()) {
+                return false;
+            }
+        }
+        if (this.teDealer.isBankrupt()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -97,6 +116,13 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     @Override
     public void nextRound() {
         // TODO:
+        while (this.curPlayer != null) {
+            // TODO: ask player to do action. hit or stand
+        }
+        // TODO: teDealer pick card
+
+
+        checkWin();
     }
 
     /**
@@ -125,5 +151,18 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     private TEDealer transferPlayer2Dealer(TEPlayer player) {
         // TODO:
         return null;
+    }
+
+    private boolean wantToContinue() {
+        System.out.println("do you want to continue? enter y(es) or n(o):");
+        String choice = ScanUtils.scanString();
+        while (!choice.equalsIgnoreCase("y") && !choice.equalsIgnoreCase("n")) {
+            System.out.println("please enter 'y' for yes, or 'n' for no:");
+            choice = ScanUtils.scanString();
+        }
+        if (choice.equalsIgnoreCase("y")) {
+            return true;
+        }
+        return false;
     }
 }
