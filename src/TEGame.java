@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -37,6 +39,14 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     @Override
     public boolean isCardGame() {
         return true;
+    }
+    
+    public TEDealer getTEDealer() {
+    	return this.teDealer;
+    }
+    
+    public void setTEDealer(TEDealer teDealer) {
+    	this.teDealer = teDealer;
     }
 
     /**
@@ -135,23 +145,66 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     }
 
     /**
-     * @Description: transfer dealer into player
+     * @Description: ask if player want to be de
      * @return: true if it is a card game
      * @Author: Fangxu Zhou
      */
-    private TEPlayer transferDealer2Player(TEDealer dealer) {
-        // TODO:
-        return null;
+    private void sortPlayersByDeposit(){
+    	Collections.sort(this.tePlayerList, new Comparator<TEPlayer>() {
+			@Override
+			public int compare(TEPlayer p1, TEPlayer p2) {
+				// TODO Auto-generated method stub
+				double diff = p1.getDeposit() - p2.getDeposit();
+				if(diff<0) {
+					return -1;
+				}else if(diff>0) {
+					return 1;
+				}
+				return 0;
+			}
+    	});
     }
-
+    
+    
     /**
-     * @Description: transfer player into dealer
+     * @Description: ask if player want to be dealer
+     * @return: true if it is a card game
      * @Author: Fangxu Zhou
      */
-    private TEDealer transferPlayer2Dealer(TEPlayer player) {
-        // TODO:
-        return null;
+    private TEPlayer askToBeDealer() {
+        this.sortPlayersByDeposit(); 
+        TEPlayer player = null;
+        for (TEPlayer p : this.tePlayerList){
+        	System.out.println("Player No." +  p.getId() + ", do you want to be the dealer for the next round?");
+        	System.out.println("Press y for a yes, press any button else for a no.");
+        	String answer = ScanUtils.scanString();
+        	if (answer.equalsIgnoreCase("y")) {
+        		player  =  p;
+        		break;
+        	}
+        }	
+        return player;
     }
+    
+    
+    /**
+     * @Description: exchange the roles of dealer and player
+     * @return: true if it is a card game
+     * @Author: Fangxu Zhou
+     */
+    private void exchangeRoles(TEPlayer playerTobeDealer) {
+    	// transfer the dealer to a new player
+    	TEPlayer newPlayer = new TEPlayer(playerTobeDealer.getId());
+    	newPlayer.setDeposit(this.teDealer.getDeposit());
+    	this.tePlayerList.remove(playerTobeDealer);
+    	this.tePlayerList.add(newPlayer);
+    	
+    	// transfer the player to a deaterr
+    	TEDealer newDealer = new TEDealer();
+    	newDealer.setDeposit(playerTobeDealer.getDeposit());
+    	this.setTEDealer(newDealer);	
+    }
+    
 
     private boolean wantToContinue() {
         System.out.println("do you want to continue? enter y(es) or n(o):");
