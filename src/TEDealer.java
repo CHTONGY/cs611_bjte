@@ -6,6 +6,10 @@
 public class TEDealer extends Dealer {
     private double deposit;
 
+    public boolean isBankrupt() {
+        return this.deposit < 0;
+    }
+
     public TEDealer() {
         super(2);
     }
