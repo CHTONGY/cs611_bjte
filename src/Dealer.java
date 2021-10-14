@@ -84,20 +84,34 @@ public class Dealer {
     }
 
     /**
-     * @Description: to give out a card from a deck
+     * @Description: to give out a card from a deck. if no param, deal public card
      * @return: the card that gives out
      * @Author: Yan Tong
      */
     public Card deal() {
+        return deal(true);
+    }
+
+    /**
+     * @Description: to give out a card from a deck
+     * @Param: isPublic: dealt card is public or not
+     * @return: the card that gives out
+     * @Author: Yan Tong
+     */
+    public Card deal(boolean isPublic) {
         // if deck list has cards remain, then use them directly
         if (cardIterator.hasNext()) {
-            return cardIterator.next();
+            Card c = cardIterator.next();
+            c.setPublic(isPublic);
+            return c;
         }
         // if all decks are empty, then shuffle and reset iterator
         shuffle();
         cardIterator.reset();
         if (cardIterator.hasNext()) {
-            return cardIterator.next();
+            Card c = cardIterator.next();
+            c.setPublic(isPublic);
+            return c;
         }
         return null;
     }
