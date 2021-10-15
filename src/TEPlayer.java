@@ -19,11 +19,16 @@ public class TEPlayer extends CardPlayer {
         this.actionMap.put("stand", new StandAction());
     }
 
-    public Card hit(TEDealer teDealer) {
+    public Card hit(TEDealer teDealer, boolean isPublicCard) {
         // te player only has one handcard, so we can just pass the handcard list to act method
         Card hitCard = this.actionMap.get("hit").act(teDealer, this.getHandCardList()).get(0);
+        hitCard.setPublic(isPublicCard);
         dealFaceValue(hitCard);
         return hitCard;
+    }
+
+    public Card hit(TEDealer teDealer) {
+        return hit(teDealer, true);
     }
 
     public void stand(TEDealer teDealer) {

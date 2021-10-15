@@ -147,27 +147,35 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
             while (!choice.equalsIgnoreCase("s")) {
                 if (!choice.equalsIgnoreCase("h")) {
                     System.out.println("invalid input. please enter 'h' for hit, or enter 's' for stand:");
+                    choice = ScanUtils.scanString();
                     continue;
                 }
                 Card hitCard = this.curPlayer.hit(this.teDealer);
                 System.out.printf("the card you get is %s\n", hitCard.getSymbol());
+                System.out.printf("Your hand cards: %s\n",
+                        playerHandCardInfo(this.curPlayer));
+
                 if (this.curPlayer.getHandCardList().get(0).isBusted()) {
                     System.out.printf("total face value: %d. busted!\n",
                             this.curPlayer.getHandCardList().get(0).getTotalPoints());
                     break;
                 }
-                System.out.println("enter 'h' for hit, or enter 's' for stand");
+                System.out.println("enter 'h' for hit, or enter 's' for stand:");
                 choice = ScanUtils.scanString();
             }
             System.out.printf("Player %d, your hand cards: %s\n",
                     this.curPlayer.getId(),
                     playerHandCardInfo(this.curPlayer));
-            System.out.println("next player.");
 
             this.curPlayer = nextTurn(this.curPlayer);
+            if (this.curPlayer != null) {
+                System.out.println("Next player");
+            }
         }
         // teDealer pick card
         handleDealer();
+        System.out.printf("Dealer cards info: %s\n",
+                printHandCardInfo(this.teDealer.getHandCard()));
         // at the end of a round, check win
         checkWin();
     }
@@ -381,14 +389,14 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
 
     private void dealCards2Dealer(int cardNum, boolean isPublicCard) {
         for (int i = 0; i < cardNum; i++) {
-            this.teDealer.getHandCard().addCard(this.teDealer.deal(isPublicCard));
+            this.teDealer.hit(isPublicCard);
         }
     }
 
     private void dealCards2Player(int cardNum, boolean isPublicCard) {
         for (TEPlayer tePlayer : this.tePlayerList) {
             for (int i = 0; i < cardNum; i++) {
-                tePlayer.getHandCardList().get(0).addCard(this.teDealer.deal(isPublicCard));
+                tePlayer.hit(this.teDealer, isPublicCard);
             }
         }
     }
@@ -401,7 +409,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         for (TEPlayer tePlayer : this.tePlayerList) {
             while (true) {
                 System.out.printf("Player%d, your private card is: %s. " +
-                                "Enter 'b' for betting, or 'f' for fold:",
+                                "Enter 'b' for betting, or 'f' for fold:\n",
                         tePlayer.getId(),
                         tePlayer.getHandCardList().get(0).getHandCardList().get(0).getSymbol());
                 String choice = ScanUtils.scanString();
@@ -421,7 +429,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
             }
 
             // betting
-            System.out.printf("Your deposit is: %f, enter the money you want to bet:\n", tePlayer.getDeposit());
+            System.out.printf("Your deposit is: %.2f, enter the money you want to bet:\n", tePlayer.getDeposit());
             double betting = ScanUtils.scanDouble(0, tePlayer.getDeposit());
             while (betting == 0) {
                 System.out.println("Betting has to be larger than 0. Please enter again:");
@@ -468,7 +476,6 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         while (this.teDealer.getHandCard().getTotalPoints() < 27) {
             this.teDealer.hit();
         }
-        System.out.println("Dealer cards info:");
-        printHandCardInfo(this.teDealer.getHandCard());
+
     }
 }

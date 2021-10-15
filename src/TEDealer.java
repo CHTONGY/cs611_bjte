@@ -15,7 +15,12 @@ public class TEDealer extends Dealer {
      */
     @Override
     public Card hit() {
+        return hit(true);
+    }
+
+    public Card hit(boolean isPublicCard) {
         Card hitCard = super.hit();
+        hitCard.setPublic(isPublicCard);
         dealFaceValue(hitCard);
         return hitCard;
     }
