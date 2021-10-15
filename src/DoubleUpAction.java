@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -6,6 +7,9 @@ import java.util.List;
  * @author: You Peng
  **/
 public class DoubleUpAction implements CardGameAction {
+
+    public static final String ACTION_NAME = "doubleUp";
+
     /**
      * @param dealer
      * @param handCards
@@ -18,6 +22,9 @@ public class DoubleUpAction implements CardGameAction {
     @Override
     public List<Card> act(Dealer dealer, List<HandCard> handCards) {
         // TODO:
-        return null;
+        for (HandCard handCard: handCards) {
+            handCard.setBetAmount(handCard.getBetAmount() * 2);
+        }
+        return new ArrayList<>();
     }
 }

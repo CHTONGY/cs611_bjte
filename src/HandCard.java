@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @className: HandCard
@@ -56,6 +53,14 @@ public class HandCard {
         }
     }
 
+    public Card addCard(Card card, boolean check) {
+        if (check) {
+            card = checkCard(this, card);
+        }
+        addCard(card);
+        return card;
+    }
+
     /**
      * Remove card by index.
      *
@@ -79,7 +84,7 @@ public class HandCard {
     public Card randomRemoveCard() {
         // TODO: rename the function to randomRemoveCard
         // create instance of Random class
-        Random rand = new Random();
+        Random rand = new Random(System.nanoTime());
         // Generate random integers in range 0 to list size
         int randId = rand.nextInt(handCardList.size());
         return removeCard(randId);
@@ -101,6 +106,18 @@ public class HandCard {
             throw new NoSuchElementException("No such card in this hand.");
         }
         return removeCard(index);
+    }
+
+    public Card checkCard(HandCard handCard, Card card) {
+        if (card.getFaceValue() > 10) {
+            card.setFaceValue(10);
+        }
+        else if (card.getSymbol().equals("A")) {
+            if (handCard.getTotalPoints() + card.getFaceValue() <= handCard.getMaxPoint()) {
+                card.setFaceValue(11);
+            }
+        }
+        return card;
     }
 
     public List<Card> getHandCardList() {
@@ -159,5 +176,25 @@ public class HandCard {
 
     public int getMaxPoint() {
         return maxPoint;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        handCardList.sort(new HandCardComparator());
+        sb.append("\nCurrent cards: ");
+        for (Card card: handCardList) {
+            sb.append(card.getFaceValue());
+            sb.append(", ");
+        }
+        sb.append(String.format("\nBet Amount: $%.2f\nBusted: %s", betAmount, isBusted()));
+        return sb.toString();
+    }
+
+    private static class HandCardComparator implements Comparator<Card> {
+        @Override
+        public int compare(Card o1, Card o2) {
+            return o1.getFaceValue() - o2.getFaceValue();
+        }
     }
 }

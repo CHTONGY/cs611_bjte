@@ -8,6 +8,16 @@ import java.util.List;
  **/
 public class HitAction implements CardGameAction {
     public static final String ACTION_NAME = "hit";
+
+    private final boolean check;
+
+    public HitAction () {
+        this.check = false;
+    }
+
+    public HitAction (boolean check) {
+        this.check = check;
+    }
     /**
      * @Description: hit action of card game
      * @Param: Dealer dealer
@@ -20,9 +30,21 @@ public class HitAction implements CardGameAction {
         List<Card> addedCard = new ArrayList<>();
         for (HandCard hc : handCards) {
             Card c = dealer.deal();
-            hc.addCard(c);
+            c = hc.addCard(c, check);
             addedCard.add(c);
         }
         return addedCard;
     }
+
+//    public Card checkCard(HandCard handCard, Card card) {
+//        if (card.getFaceValue() > 10) {
+//            card.setFaceValue(10);
+//        }
+//        else if (card.getSymbol().equals("A")) {
+//            if (handCard.getTotalPoints() + card.getFaceValue() <= handCard.getMaxPoint()) {
+//                card.setFaceValue(11);
+//            }
+//        }
+//        return card;
+//    }
 }

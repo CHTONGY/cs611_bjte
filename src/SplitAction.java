@@ -9,6 +9,9 @@ import java.util.List;
  **/
 
 public class SplitAction implements CardGameAction {
+
+    public static final String ACTION_NAME = "split";
+
     /**
      * The split action of card game. Splitting is allowed when a HandCard has two cards of the same rank.
      *
@@ -35,7 +38,7 @@ public class SplitAction implements CardGameAction {
             if (canSplit(oldHandCard)) {
                 HandCard newHandCard = new HandCard(oldHandCard.getBetAmount(), oldHandCard.getMaxPoint());
                 // only two same cards, remove the last one
-                newHandCard.addCard(oldHandCard.removeCard(1));
+                newHandCard.addCard(oldHandCard.removeCard(1), true);
                 handCards.add(newHandCard);
             }
         }
