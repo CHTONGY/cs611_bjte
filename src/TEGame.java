@@ -178,11 +178,128 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void checkWin() {
-        // TODO:
+    	TEDealer dealer = this.getTEDealer();
+    	HandCard dealerHandCard = dealer.getHandCard();
+    	List<Card> dealerHandCardList = dealerHandCard.getHandCardList();
+    	int dealerPts = dealerHandCard.getTotalPoints();
+    	
+    	//Dealer has a natural Trianta Ena
+    	if(dealerPts == 31 && isNaturalTriantaEna(dealerHandCardList)) {
+    		//Rule: "A natural 31 of the Banker results in the Banker winning the bets from all players."
+    		dealerWinAgainstAll();
+    		return;
+    	}
+    	
+//    	OUT:
+//    	if(dealerHandCardList.size() == 3 && dealerPts == 31) {
+//    		for(Card hc: dealerHandCardList) {
+//    			if(hc.getFaceValue() == 9) {
+//    				break OUT;
+//    			}
+//    		}
+//    		dealerWinAll();
+//    		return;
+//    	}
+    	
+    	//If dealer is not a Trianta Ena, loop every player
+        for (TEPlayer player : this.tePlayerList) {
+        	HandCard playerHandCard = player.getHandCardList().get(0);
+        	if (!player.isBankrupt() && !player.getHandCardList().get(0).isBusted()) {
+        		int playerPts = player.getHandCardList().get(0).getTotalPoints();
+        		//A player can win if he has pts > dealer's pts OR he has a natural Trianta Ena
+        		if(playerPts > dealerPts || isNaturalTriantaEna(playerHandCard.getHandCardList())){
+        			playerWinAgainstDealer(player);
+        		//Otherwise, he loses (his pts <= dealer's pts)
+        		}else {
+        			dealerWinAgainstPlayer(player);
+        		}
+        	}
+        }
+        
+        TEPlayer playerTobeDealer = askToBeDealer();
+        if (playerTobeDealer != null) {
+        	exchangeRoles(playerTobeDealer);
+        }
+        
+        
+    }
+    
+    /**
+     * @Description: check if the handcard is a natural Trianta Ena
+     * @return: boolean: true if it is
+     * @Author: Fangxu Zhou
+     */
+    private boolean isNaturalTriantaEna(List<Card> handCardLst) {
+    	// for a handcard to be a natural TE, it should have one Ace, two faces, so it should have three cards
+    	if(handCardLst.size() == 3) {
+    		for(Card hc: handCardLst) {
+    			// if among these three cards, one card has a face value as 9, then this hand card is not a natural TE
+    			if(hc.getFaceValue() == 9) {
+    				return false;
+    			}
+    		}
+    		return true;
+    	}
+    	return false;
     }
 
     /**
-     * @Description: ask if player want to be de
+     * @Description: Dealer wins against all the players
+     * @Author: Fangxu Zhou
+     */
+    private void dealerWinAgainstAll() {
+    	TEDealer teDealer = this.getTEDealer();
+    	teDealer.getHandCard().setWinStatus(1);
+    	for(TEPlayer p : this.tePlayerList) {
+    		dealerWinAgainstPlayer(p);
+    	}
+    }
+    
+    /**
+     * @Description: Dealer wins against a player
+     * @Author: Fangxu Zhou
+     */
+    private void dealerWinAgainstPlayer(TEPlayer player) {
+    	TEDealer dealer = this.getTEDealer();
+    	double playerBetting = player.getBetting();
+		double playerDeposit = player.getDeposit();
+		// if the player doesn't have enough money to lose
+		if (playerDeposit <= playerBetting) {
+			player.setDeposit(0); // the player's now bankrupt
+			dealer.accumulate(playerDeposit); // the dealer gets what the player left as deposit
+		}else {
+			player.setDeposit(playerDeposit - playerBetting);  // the player loses his betting
+			dealer.accumulate(playerBetting); // the dealer gets what the player bets
+		}
+		player.getHandCardList().get(0).setWinStatus(-1);  // set the handcard of the player as losed
+		dealer.getHandCard().setWinStatus(1); // set the handcard of the leader as won
+    }
+    
+    
+    /**
+     * @Description: Player wins against a dealer
+     * @Author: Fangxu Zhou
+     */
+    private void playerWinAgainstDealer(TEPlayer player) {
+    	TEDealer dealer = this.getTEDealer();
+    	double playerBetting = player.getBetting();
+    	double playerDeposit = player.getDeposit();
+    	double dealerDeposit = dealer.getDeposit();
+    	// if the dealer doesn't have enough money to lose
+		if (dealerDeposit <= playerBetting) {
+			dealer.payOut(playerDeposit); // the dealer pays all what he as as deposit
+			player.setDeposit(playerDeposit + dealerDeposit);  // the player gets what the dealer left as deposit
+		}else {
+			dealer.payOut(playerBetting); // the dealer pays what the player bets
+			player.setDeposit(playerDeposit + playerBetting); // the player gets what the he bets
+		}
+		dealer.getHandCard().setWinStatus(-1); // set the handcard of the leader as losed
+		player.getHandCardList().get(0).setWinStatus(1); // set the handcard of the player as won
+    }
+    
+
+    /**
+     * @Description: sort the players by the pts of their handcard
      * @return: true if it is a card game
      * @Author: Fangxu Zhou
      */
