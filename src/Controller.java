@@ -5,7 +5,6 @@
  **/
 public class Controller {
     public static void run() {
-        // TODO:
         System.out.println("Welcome to card games!");
         while (true) {
             System.out.println("Enter 'b' for playing black jack. " +
