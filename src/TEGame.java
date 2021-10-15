@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @className: TEGame
@@ -65,9 +62,11 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     public void play() {
         welcome();
         while (true) {
-            if (hasNextRound()) {
-                nextRound();
+            if (!hasNextRound()) {
+                break;
             }
+            init();
+            nextRound();
             if (!wantToContinue()) {
                 break;
             }
@@ -90,7 +89,14 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void init() {
-        // do nothing on init process
+        // clear hand cards
+        clearAllPlayersHandCard();
+        clearDealerHandCard();
+        // deal new cards
+        dealInitialCard();
+        setPlayerBetting();
+        dealCards2Player(2, true);
+        dealCards2Dealer(2, false);
         return;
     }
 
@@ -118,10 +124,12 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     public boolean hasNextRound() {
         for (TEPlayer tePlayer : this.tePlayerList) {
             if (tePlayer.isBankrupt()) {
+                System.out.printf("Player%d is bankrupt. Game over.\n", tePlayer.getId());
                 return false;
             }
         }
         if (this.teDealer.isBankrupt()) {
+            System.out.println("Dealer is bankrupt. Game over.");
             return false;
         }
         return true;
@@ -133,10 +141,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void nextRound() {
-        dealInitialCard();
-        setPlayerBetting();
-        dealCards2Player(2, true);
-        dealCards2Dealer(2, false);
+
         while (this.curPlayer != null) {
             // ask player to do action. hit or stand
             System.out.printf("Player %d, your hand cards: %s\n",
@@ -507,6 +512,28 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         while (this.teDealer.getHandCard().getTotalPoints() < 27) {
             this.teDealer.hit();
         }
-
     }
+
+    private void clearAllPlayersHandCard() {
+        for (TEPlayer tePlayer : this.tePlayerList) {
+            clearHandCard(tePlayer.getHandCardList().get(0));
+        }
+    }
+
+    private void clearDealerHandCard() {
+        clearHandCard(this.teDealer.getHandCard());
+    }
+
+    private void clearHandCard(HandCard handCard) {
+        List<Card> cardList = handCard.getHandCardList();
+        Iterator<Card> iterator = cardList.iterator();
+        // remove cards
+        while (iterator.hasNext()) {
+            iterator.remove();
+        }
+        // recalculate point
+        handCard.calTotalPoints();
+        handCard.updateBusted();
+    }
+
 }
