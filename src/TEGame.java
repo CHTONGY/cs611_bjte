@@ -133,10 +133,10 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void nextRound() {
-        // TODO:
         dealInitialCard();
         setPlayerBetting();
         dealCards2Player(2, true);
+        dealCards2Dealer(2, false);
         while (this.curPlayer != null) {
             // ask player to do action. hit or stand
             System.out.printf("Player %d, your hand cards: %s\n",
@@ -258,8 +258,14 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
 
     private void dealInitialCard() {
         // deal card(s) to players and dealer at the beginning of game
-        this.teDealer.getHandCard().addCard(this.teDealer.deal(false));
+        dealCards2Dealer(1, true);
         dealCards2Player(1, false);
+    }
+
+    private void dealCards2Dealer(int cardNum, boolean isPublicCard) {
+        for (int i = 0; i < cardNum; i++) {
+            this.teDealer.getHandCard().addCard(this.teDealer.deal(isPublicCard));
+        }
     }
 
     private void dealCards2Player(int cardNum, boolean isPublicCard) {
