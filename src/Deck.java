@@ -53,14 +53,34 @@ public class Deck {
         // 2-10, each num has 4 cards
         for (int i = 2; i <= 10; i++) {
             for (int j = 0; j < 4; j++) {
-                res.add(new Card(String.valueOf(i)));
+                Card c = new Card(String.valueOf(i));
+                c.setFaceValue(i);
+                res.add(c);
             }
         }
         // A, J, Q, K, each has 4 cards
         String[] symbols = new String[]{"A", "J", "Q", "K"};
-        for (int i = 0; i < symbols.length; i++) {
+        for (String symbol : symbols) {
             for (int j = 0; j < 4; j++) {
-                res.add(new Card(symbols[i]));
+                Card c = new Card(symbol);
+                switch (c.getSymbol()) {
+                    case "A":
+                        c.setFaceValue(1);
+                        break;
+                    case "J":
+                        c.setFaceValue(11);
+                        break;
+                    case "Q":
+                        c.setFaceValue(12);
+                        break;
+                    case "K":
+                        c.setFaceValue(13);
+                        break;
+                    default:
+                        c.setFaceValue(0);
+                        break;
+                }
+                res.add(c);
             }
         }
 
