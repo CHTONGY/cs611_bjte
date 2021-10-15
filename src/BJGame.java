@@ -111,6 +111,23 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         }while (true);
     }
 
+    private int[] chooseAct(BJPlayer player) {
+        System.out.printf("\nPlayer[#%d] now chooses which hands you want to act on(input eg: 0 2 3):\n>>> ", player.getId());
+        List<HandCard> handCards = player.getHandCardList();
+        System.out.println("Your hands are as following:");
+        for (int i = 0; i < handCards.size(); i++) {
+            System.out.printf("Hand[#%d]\n", i);
+            System.out.println(handCards.get(i));
+        }
+        String input = ScanUtils.scanString();
+        String[] ids = input.split(" ");
+        int[] res = new int[ids.length];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = Integer.parseInt(ids[i]);
+        }
+        return res;
+    }
+
     private void askBet(BJPlayer player) {
         double minBet = 1;
 
@@ -188,19 +205,26 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         int countStand = 0;
         while (countStand < players.size()) {
             if (curPlayerIndex == 0)    countStand = 0;
-            
+
+
             String choice = chooseAction(curPlayer);
-            curPlayer.takeAction(bjDealer, choice);
+            int[] actOnIds = chooseAct(curPlayer);
+
+            curPlayer.takeAction(bjDealer, choice, actOnIds);
             // keep hitting
             while (choice.equals(HitAction.ACTION_NAME)) {
                 choice = chooseAction(curPlayer);
-                curPlayer.takeAction(bjDealer, choice);
+                actOnIds = chooseAct(curPlayer);
+                curPlayer.takeAction(bjDealer, choice, actOnIds);
             }
             askBet(curPlayer);
+            actOnIds = chooseAct(curPlayer);
+            curPlayer.takeAction(bjDealer, choice, actOnIds);
+
             if (curPlayer.getLastAction().equals(StandAction.ACTION_NAME)) {
                 countStand++;
             }
-            if (choice.equals(SplitAction.ACTION_NAME) || choice.equals(DoubleUpAction.ACTION_NAME)) {
+            else if (choice.equals(SplitAction.ACTION_NAME) || choice.equals(DoubleUpAction.ACTION_NAME)) {
                 curPlayer.updateDeposit(curPlayer.updateBet());
                 countStand++;
             }

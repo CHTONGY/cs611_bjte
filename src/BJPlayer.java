@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +59,19 @@ public class BJPlayer extends CardPlayer {
         setDeposit(getDeposit() - diff);
     }
 
-    public List<Card> takeAction(BJDealer dealer, String actionName) {
+    public List<Card> takeAction(BJDealer dealer, String actionName, int[] actOnIds) {
         lastAction = actionName;
-        return actionMap.get(actionName).act(dealer, getHandCardList());
+        List<HandCard> actOn = new ArrayList<>();
+        for (int i : actOnIds) {
+            actOn.add(getHandCardList().get(i));
+        }
+        if (actionName.equals(SplitAction.ACTION_NAME)) {
+            getHandCardList().removeAll(actOn);
+            List<Card> result = actionMap.get(actionName).act(dealer, actOn);
+            getHandCardList().addAll(actOn);
+            return result;
+        }
+        return actionMap.get(actionName).act(dealer, actOn);
     }
 
 }
