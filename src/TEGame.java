@@ -194,43 +194,57 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     	//Dealer has a natural Trianta Ena
     	if(dealerPts == 31 && isNaturalTriantaEna(dealerHandCardList)) {
     		//Rule: "A natural 31 of the Banker results in the Banker winning the bets from all players."
+    		System.out.println("Banker got a natural Trienta Ena, Banker wins agaisnt all the players");
     		dealerWinAgainstAll();
-    		return;
+    	}else {
+    		//If dealer is not a Trianta Ena, loop every player
+            for (TEPlayer player : this.tePlayerList) {
+            	HandCard playerHandCard = player.getHandCardList().get(0);
+            	if (!player.isBankrupt() && !player.getHandCardList().get(0).isBusted()) {
+            		int playerPts = player.getHandCardList().get(0).getTotalPoints();
+            		//A player can win if he has pts > dealer's pts OR he has a natural Trianta Ena
+            		if(playerPts > dealerPts || isNaturalTriantaEna(playerHandCard.getHandCardList())){
+            			System.out.println("Player No." + player.getId() + " wins against Banker");
+            			playerWinAgainstDealer(player);
+            		//Otherwise, he loses (his pts <= dealer's pts)
+            		}else {
+            			System.out.println("Player No." + player.getId() + " loses against Banker");
+            			dealerWinAgainstPlayer(player);
+            		}
+            	}
+            }
     	}
     	
-//    	OUT:
-//    	if(dealerHandCardList.size() == 3 && dealerPts == 31) {
-//    		for(Card hc: dealerHandCardList) {
-//    			if(hc.getFaceValue() == 9) {
-//    				break OUT;
-//    			}
-//    		}
-//    		dealerWinAll();
-//    		return;
-//    	}
-    	
-    	//If dealer is not a Trianta Ena, loop every player
-        for (TEPlayer player : this.tePlayerList) {
-        	HandCard playerHandCard = player.getHandCardList().get(0);
-        	if (!player.isBankrupt() && !player.getHandCardList().get(0).isBusted()) {
-        		int playerPts = player.getHandCardList().get(0).getTotalPoints();
-        		//A player can win if he has pts > dealer's pts OR he has a natural Trianta Ena
-        		if(playerPts > dealerPts || isNaturalTriantaEna(playerHandCard.getHandCardList())){
-        			playerWinAgainstDealer(player);
-        		//Otherwise, he loses (his pts <= dealer's pts)
-        		}else {
-        			dealerWinAgainstPlayer(player);
-        		}
-        	}
-        }
+    	System.out.println("After this round:");
+    	printRank();
         
         TEPlayer playerTobeDealer = askToBeDealer();
         if (playerTobeDealer != null) {
         	exchangeRoles(playerTobeDealer);
+        	System.out.println("Player No." + playerTobeDealer.getId() + 
+        			" will be Banker for the next round. His deposit is " + playerTobeDealer.getDeposit());
+        	System.out.println("The former Banker now becomes Player No." + playerTobeDealer.getId());
+        	System.out.println("For the coming round:");
+        	printRank();
+        }else if(dealer.isBankrupt()) {
+        	System.out.println("Banker is bankrupt and no one wants to be Banker for the next round, so the game is over.");
         }
-        
-        
     }
+    
+    
+    /**
+     * @Description: print the rank list of deposit of players
+     * @Author: Fangxu Zhou
+     */
+    private void printRank() {
+    	System.out.println("Banker's deposit is " + teDealer.getDeposit());
+    	sortPlayersByDeposit();
+    	System.out.println("The rank list of deposit is shown as below");
+    	for(TEPlayer player : tePlayerList) {
+    		System.out.println("Player No." + player.getId() + " holds " + player.getDeposit());
+    	}
+    }
+    
     
     /**
      * @Description: check if the handcard is a natural Trianta Ena
@@ -273,10 +287,17 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
 		double playerDeposit = player.getDeposit();
 		// if the player doesn't have enough money to lose
 		if (playerDeposit <= playerBetting) {
+			System.out.println("Player No." + player.getId() + "'s bet is " + player.getBetting());
+			System.out.println("Player No." + player.getId() + "'s deposit for now is " + player.getDeposit());
+			System.out.println("Player No." + player.getId() + " doesn't have enough money to pay his bet");
+			System.out.println("Player No." + player.getId() + "'s now bankrupt");
 			player.setDeposit(0); // the player's now bankrupt
 			dealer.accumulate(playerDeposit); // the dealer gets what the player left as deposit
 		}else {
+			System.out.println("Player No." + player.getId() + "'s bet is " + player.getBetting());
+			System.out.println("Player No." + player.getId() + "'s deposit for now is " + player.getDeposit());
 			player.setDeposit(playerDeposit - playerBetting);  // the player loses his betting
+			System.out.println("After paying his bet, Player No." + player.getId() + "'s updated deposit is " + player.getDeposit());
 			dealer.accumulate(playerBetting); // the dealer gets what the player bets
 		}
 		player.getHandCardList().get(0).setWinStatus(-1);  // set the handcard of the player as losed
@@ -295,11 +316,19 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     	double dealerDeposit = dealer.getDeposit();
     	// if the dealer doesn't have enough money to lose
 		if (dealerDeposit <= playerBetting) {
+			System.out.println("Player No." + player.getId() + "'s bet is " + player.getBetting());
+			System.out.println("Banker's deposit for now is " + dealer.getDeposit());
+			System.out.println("Banker doesn't have enough money to pay the player, he has to pay all his deposit to the player");
+			System.out.println("Banker's now bankrupt");
+			System.out.println("After getting his prize, Player No." + player.getId() + "'s updated deposit is " + player.getDeposit());
 			dealer.payOut(playerDeposit); // the dealer pays all what he as as deposit
 			player.setDeposit(playerDeposit + dealerDeposit);  // the player gets what the dealer left as deposit
 		}else {
+			System.out.println("Player No." + player.getId() + "'s bet is " + player.getBetting());
+			System.out.println("Player No." + player.getId() + "'s deposit for now is " + player.getDeposit());
 			dealer.payOut(playerBetting); // the dealer pays what the player bets
 			player.setDeposit(playerDeposit + playerBetting); // the player gets what the he bets
+			System.out.println("After getting his prize, Player No." + player.getId() + "'s updated deposit is " + player.getDeposit());
 		}
 		dealer.getHandCard().setWinStatus(-1); // set the handcard of the leader as losed
 		player.getHandCardList().get(0).setWinStatus(1); // set the handcard of the player as won
@@ -337,12 +366,14 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         this.sortPlayersByDeposit(); 
         TEPlayer player = null;
         for (TEPlayer p : this.tePlayerList){
-        	System.out.println("Player No." +  p.getId() + ", do you want to be the dealer for the next round?");
-        	System.out.println("Press y for a yes, press any button else for a no.");
-        	String answer = ScanUtils.scanString();
-        	if (answer.equalsIgnoreCase("y")) {
-        		player  =  p;
-        		break;
+        	if(!p.isBankrupt()) {
+        		System.out.println("Player No." +  p.getId() + ", do you want to be the dealer for the next round?");
+            	System.out.println("Press y for a yes, press any button else for a no.");
+            	String answer = ScanUtils.scanString();
+            	if (answer.equalsIgnoreCase("y")) {
+            		player  =  p;
+            		break;
+            	}
         	}
         }	
         return player;
