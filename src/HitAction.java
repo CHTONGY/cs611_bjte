@@ -35,16 +35,4 @@ public class HitAction implements CardGameAction {
         }
         return addedCard;
     }
-
-//    public Card checkCard(HandCard handCard, Card card) {
-//        if (card.getFaceValue() > 10) {
-//            card.setFaceValue(10);
-//        }
-//        else if (card.getSymbol().equals("A")) {
-//            if (handCard.getTotalPoints() + card.getFaceValue() <= handCard.getMaxPoint()) {
-//                card.setFaceValue(11);
-//            }
-//        }
-//        return card;
-//    }
 }
