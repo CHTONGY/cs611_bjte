@@ -192,6 +192,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void checkWin() {
+    	System.out.println("\nThis round is completed");
     	HandCard dealerHandCard = teDealer.getHandCard();
     	int dealerPts = dealerHandCard.getTotalPoints();
     	
@@ -223,17 +224,17 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
             }
     	}
     	
-    	System.out.println("After this round:");
+    	System.out.println("\nAfter this round:");
     	printRank();
         
     	sortPlayersByDeposit();
     	if(teDealer.getDeposit()>tePlayerList.get(0).getDeposit()) {
-    		System.out.println("Banker still holds the largest deposit, so Banker stick to his current role for the next round");
+    		System.out.println("\nBanker still holds the largest deposit, so Banker stick to his current role for the next round\n");
     	}else {
     		TEPlayer playerTobeDealer = askToBeDealer();
             if (playerTobeDealer != null) {
             	exchangeRoles(playerTobeDealer);
-            	System.out.println("Player No." + playerTobeDealer.getId() + 
+            	System.out.println("\nPlayer No." + playerTobeDealer.getId() + 
             			" will be Banker for the next round. His deposit is " + playerTobeDealer.getDeposit());
             	System.out.println("The former Banker now becomes Player No." + playerTobeDealer.getId());
             	System.out.println("For the coming round:");
@@ -252,7 +253,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     private void printRank() {
     	System.out.println("Banker's deposit is " + teDealer.getDeposit());
     	sortPlayersByDeposit();
-    	System.out.println("The rank list of deposit is shown as below");
+    	System.out.println("The rank list of deposit is shown as below:");
     	for(TEPlayer player : tePlayerList) {
     		System.out.println("Player No." + player.getId() + " holds " + player.getDeposit());
     	}
