@@ -193,11 +193,10 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     @Override
     public void checkWin() {
     	HandCard dealerHandCard = teDealer.getHandCard();
-    	List<Card> dealerHandCardList = dealerHandCard.getHandCardList();
     	int dealerPts = dealerHandCard.getTotalPoints();
     	
     	//Dealer has a natural Trianta Ena
-    	if(dealerPts == 31 && isNaturalTriantaEna(dealerHandCardList)) {
+    	if(dealerPts == 31 && isNaturalTriantaEna(dealerHandCard.getHandCardList())) {
     		//Rule: "A natural 31 of the Banker results in the Banker winning the bets from all players."
     		System.out.println("Banker got a natural Trienta Ena, Banker wins agaisnt all the players");
     		dealerWinAgainstAll();
@@ -205,13 +204,17 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     		//If dealer is not a Trianta Ena, loop every player
             for (TEPlayer player : tePlayerList) {
             	HandCard playerHandCard = player.getHandCardList().get(0);
-            	if (!player.isBankrupt() && !player.getHandCardList().get(0).isBusted()) {
-            		int playerPts = player.getHandCardList().get(0).getTotalPoints();
-            		//A player can win if he has pts > dealer's pts OR he has a natural Trianta Ena
-            		if(playerPts > dealerPts || isNaturalTriantaEna(playerHandCard.getHandCardList())){
+            	if (!player.isBankrupt()) {
+            		int playerPts = playerHandCard.getTotalPoints();
+            		//A player can win if (while he's not busted, he has pts > dealer's pts) 
+            		//OR (while he's not busted, Banker is busted; to note: if both Player and Banker busted, Player loses) 
+            		//OR (he has a natural Trianta Ena)
+            		Boolean playerWon = (!playerHandCard.isBusted() && (playerPts > dealerPts || dealerHandCard.isBusted()))
+            							|| isNaturalTriantaEna(playerHandCard.getHandCardList());
+            		if(playerWon){
             			System.out.println("Player No." + player.getId() + " wins against Banker");
             			playerWinAgainstDealer(player);
-            		//Otherwise, he loses (his pts <= dealer's pts)
+            		//Otherwise, he loses (his pts <= dealer's pts; OR Both Player and Banker busted)
             		}else {
             			System.out.println("Player No." + player.getId() + " loses against Banker");
             			dealerWinAgainstPlayer(player);
