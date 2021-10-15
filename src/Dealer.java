@@ -13,17 +13,23 @@ public class Dealer {
 
     private CardIterator cardIterator;
 
-    // init Dealer with DeckNum deck
-    public Dealer(int deckNum) {
+    // init Dealer with DeckNum deck and hand card
+    public Dealer(int deckNum, HandCard handCard) {
         List<Deck> deckList = new ArrayList<>();
         for (int i = 0; i < deckNum; i++) {
             deckList.add(new Deck());
         }
         this.deckList = deckList;
-        this.handCard = null;
+        this.handCard = handCard;
 
         this.cardIterator = new CardIterator();
     }
+
+
+    public Dealer(int deckNum) {
+        this(deckNum, null);
+    }
+
 
     // initialize with 1 deck if no argument
     public Dealer() {
