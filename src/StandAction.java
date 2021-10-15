@@ -7,6 +7,7 @@ import java.util.List;
  * @author: Fangxu Zhou, You Peng, Yan Tong
  **/
 public class StandAction implements CardGameAction {
+    public static final String ACTION_NAME = "stand";
     /**
      * @Description: stand action of card game
      * @Param: Dealer dealer

@@ -7,6 +7,7 @@ import java.util.List;
  * @author: Yan Tong
  **/
 public class HitAction implements CardGameAction {
+    public static final String ACTION_NAME = "hit";
     /**
      * @Description: hit action of card game
      * @Param: Dealer dealer
