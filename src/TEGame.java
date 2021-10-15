@@ -178,6 +178,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
             }
         }
         // teDealer pick card
+        System.out.println("It's turn to dealer.");
         handleDealer();
         System.out.printf("Dealer cards info: %s\n",
                 printHandCardInfo(this.teDealer.getHandCard()));
@@ -494,19 +495,26 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         StringBuilder privateSb = new StringBuilder();
         publicSb.append("public card(s): ");
         privateSb.append("private card(s): ");
+        boolean hasPublicCard = false;
+        boolean hasPrivateCard = false;
         List<Card> cards = handCard.getHandCardList();
         for (Card card : cards) {
             if (card.isPublic()) {
+                hasPublicCard = true;
                 publicSb.append(card.getSymbol()).
                         append("(").append(card.getFaceValue()).append(")").
                         append(" ");
             } else {
+                hasPrivateCard = true;
                 privateSb.append(card.getSymbol()).
                         append("(").append(card.getFaceValue()).append(")").
                         append(" ");
             }
         }
-        publicSb.append("; ").append(privateSb);
+        if (hasPrivateCard) {
+            publicSb.append("; ").append(privateSb);
+        }
+        publicSb.append("; total points: ").append(handCard.getTotalPoints());
         return publicSb.toString().trim();
     }
 
