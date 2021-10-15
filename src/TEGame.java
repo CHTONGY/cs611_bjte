@@ -191,8 +191,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     @Override
     public void checkWin() {
-    	TEDealer dealer = this.getTEDealer();
-    	HandCard dealerHandCard = dealer.getHandCard();
+    	HandCard dealerHandCard = teDealer.getHandCard();
     	List<Card> dealerHandCardList = dealerHandCard.getHandCardList();
     	int dealerPts = dealerHandCard.getTotalPoints();
     	
@@ -203,7 +202,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     		dealerWinAgainstAll();
     	}else {
     		//If dealer is not a Trianta Ena, loop every player
-            for (TEPlayer player : this.tePlayerList) {
+            for (TEPlayer player : tePlayerList) {
             	HandCard playerHandCard = player.getHandCardList().get(0);
             	if (!player.isBankrupt() && !player.getHandCardList().get(0).isBusted()) {
             		int playerPts = player.getHandCardList().get(0).getTotalPoints();
@@ -223,17 +222,22 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     	System.out.println("After this round:");
     	printRank();
         
-        TEPlayer playerTobeDealer = askToBeDealer();
-        if (playerTobeDealer != null) {
-        	exchangeRoles(playerTobeDealer);
-        	System.out.println("Player No." + playerTobeDealer.getId() + 
-        			" will be Banker for the next round. His deposit is " + playerTobeDealer.getDeposit());
-        	System.out.println("The former Banker now becomes Player No." + playerTobeDealer.getId());
-        	System.out.println("For the coming round:");
-        	printRank();
-        }else if(dealer.isBankrupt()) {
-        	System.out.println("Banker is bankrupt and no one wants to be Banker for the next round, so the game is over.");
-        }
+    	sortPlayersByDeposit();
+    	if(teDealer.getDeposit()>tePlayerList.get(0).getDeposit()) {
+    		System.out.println("Banker still holds the largest deposit, so Banker stick to his current role for the next round");
+    	}else {
+    		TEPlayer playerTobeDealer = askToBeDealer();
+            if (playerTobeDealer != null) {
+            	exchangeRoles(playerTobeDealer);
+            	System.out.println("Player No." + playerTobeDealer.getId() + 
+            			" will be Banker for the next round. His deposit is " + playerTobeDealer.getDeposit());
+            	System.out.println("The former Banker now becomes Player No." + playerTobeDealer.getId());
+            	System.out.println("For the coming round:");
+            	printRank();
+            }else if(teDealer.isBankrupt()) {
+            	System.out.println("Banker is bankrupt and no one wants to be Banker for the next round, so the game is over.");
+            }
+    	}
     }
     
     
@@ -368,10 +372,9 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      * @Author: Fangxu Zhou
      */
     private TEPlayer askToBeDealer() {
-        this.sortPlayersByDeposit(); 
         TEPlayer player = null;
         for (TEPlayer p : this.tePlayerList){
-        	if(!p.isBankrupt()) {
+        	if(!p.isBankrupt() && p.getDeposit() > teDealer.getDeposit()) {
         		System.out.println("Player No." +  p.getId() + ", do you want to be the dealer for the next round?");
             	System.out.println("Press y for a yes, press any button else for a no.");
             	String answer = ScanUtils.scanString();
