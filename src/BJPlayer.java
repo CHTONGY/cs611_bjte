@@ -65,10 +65,16 @@ public class BJPlayer extends CardPlayer {
         for (int i : actOnIds) {
             actOn.add(getHandCardList().get(i));
         }
+
         if (actionName.equals(SplitAction.ACTION_NAME)) {
             getHandCardList().removeAll(actOn);
             List<Card> result = actionMap.get(actionName).act(dealer, actOn);
             getHandCardList().addAll(actOn);
+            return result;
+        }
+        else if (actionName.equals(DoubleUpAction.ACTION_NAME)) {
+            List<Card> result = actionMap.get(actionName).act(dealer, actOn);
+            updateDeposit(updateBet());
             return result;
         }
         return actionMap.get(actionName).act(dealer, actOn);

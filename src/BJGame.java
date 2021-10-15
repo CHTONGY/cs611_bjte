@@ -111,7 +111,7 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         }while (true);
     }
 
-    private int[] chooseAct(BJPlayer player) {
+    private int[] chooseActOn(BJPlayer player) {
         System.out.printf("\nPlayer[#%d] now chooses which hands you want to act on(input eg: 0 2 3):\n>>> ", player.getId());
         List<HandCard> handCards = player.getHandCardList();
         System.out.println("Your hands are as following:");
@@ -206,29 +206,19 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         while (countStand < players.size()) {
             if (curPlayerIndex == 0)    countStand = 0;
 
-
             String choice = chooseAction(curPlayer);
-            int[] actOnIds = chooseAct(curPlayer);
+            int[] actOnIds = chooseActOn(curPlayer);
 
             curPlayer.takeAction(bjDealer, choice, actOnIds);
-            // keep hitting
-            while (choice.equals(HitAction.ACTION_NAME)) {
-                choice = chooseAction(curPlayer);
-                actOnIds = chooseAct(curPlayer);
-                curPlayer.takeAction(bjDealer, choice, actOnIds);
-            }
             askBet(curPlayer);
-            actOnIds = chooseAct(curPlayer);
-            curPlayer.takeAction(bjDealer, choice, actOnIds);
 
-            if (curPlayer.getLastAction().equals(StandAction.ACTION_NAME)) {
+            if (curPlayer.getLastAction().equals(StandAction.ACTION_NAME)
+                    || choice.equals(SplitAction.ACTION_NAME)
+                    || choice.equals(DoubleUpAction.ACTION_NAME)) {
                 countStand++;
+                nextTurn(curPlayer);
             }
-            else if (choice.equals(SplitAction.ACTION_NAME) || choice.equals(DoubleUpAction.ACTION_NAME)) {
-                curPlayer.updateDeposit(curPlayer.updateBet());
-                countStand++;
-            }
-            nextTurn(curPlayer);
+            //else curPlayer keep hitting
         }
 
         // all players stand, dealer's turn
