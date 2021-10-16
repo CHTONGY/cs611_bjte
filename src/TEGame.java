@@ -419,6 +419,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     	// transfer the player to a deaterr
     	TEDealer newDealer = new TEDealer();
     	newDealer.setDeposit(playerTobeDealer.getDeposit());
+    	newDealer.setHandCard(new HandCard(31));
     	this.setTEDealer(newDealer);	
     }
     
