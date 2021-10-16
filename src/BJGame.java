@@ -275,10 +275,10 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         			HandCard dealerHandCard = bjDealer.getHandCard();
         			int dealerPts = dealerHandCard.getTotalPoints();
         			// win or lose cases of a player's hand card
-        			boolean playerWon = (!playerHandCard.isBusted() && (playerPts > dealerPts))
-        						|| (playerPts == dealerPts && isNaturalBlackJack(playerHandCard) && !isNaturalBlackJack(dealerHandCard));
+        			boolean playerWon = (!playerHandCard.isBusted() && ((playerPts > dealerPts) || bjDealer.getHandCard().isBusted()))
+    						|| (playerPts == dealerPts && isNaturalBlackJack(playerHandCard) && !isNaturalBlackJack(dealerHandCard));
         			boolean playerLosed = (playerHandCard.isBusted() || playerPts < dealerPts)
-        						|| (playerPts == dealerPts && !isNaturalBlackJack(playerHandCard) && isNaturalBlackJack(dealerHandCard));
+    						|| (playerPts == dealerPts && !isNaturalBlackJack(playerHandCard) && isNaturalBlackJack(dealerHandCard));
             		System.out.println("This hand card of Player No." + player.getId() + " has total points as " + playerPts);
             		System.out.println("Dealer's hand card has total points as " + dealerPts);
         			if(playerWon) {
@@ -293,7 +293,10 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
             			System.out.println("Player No." + player.getId() + " loses.. Dealer wins..");
             			if (isNaturalBlackJack(dealerHandCard))
             				System.out.println("Losing by a natural BlackJack of Dealer");
-            			player.setDeposit(playerDeposit > playerBetting ? playerDeposit - playerBetting : 0);
+            			if (playerDeposit > playerBetting)
+            				player.setDeposit(playerDeposit - playerBetting);
+            			else
+            				player.setDeposit(0);
             			System.out.println("Losing with a bet amount as " + player.getBetting());
             			System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
             			playerHandCard.setWinStatus(-1);
