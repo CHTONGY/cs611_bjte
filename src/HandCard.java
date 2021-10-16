@@ -113,8 +113,12 @@ public class HandCard {
             card.setFaceValue(10);
         }
         else if (card.getSymbol().equals("A")) {
+            handCard.calTotalPoints();
             if (handCard.getTotalPoints() + card.getFaceValue() <= handCard.getMaxPoint()) {
                 card.setFaceValue(11);
+            }
+            else {
+                card.setFaceValue(1);
             }
         }
         return card;

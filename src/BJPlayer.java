@@ -28,11 +28,13 @@ public class BJPlayer extends CardPlayer {
     public BJPlayer(int id) {
         // TODO:
         super(id);
+        setBetting(0);
+        getHandCardList().add(new HandCard(21));
     }
 
     public BJPlayer(int id, double deposit) {
         // TODO:
-        super(id);
+        this(id);
         setDeposit(deposit);
     }
 

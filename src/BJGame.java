@@ -112,35 +112,51 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
     }
 
     private int[] chooseActOn(BJPlayer player) {
-        System.out.printf("\nPlayer[#%d] now chooses which hands you want to act on(input eg: 0 2 3):\n>>> ", player.getId());
+        System.out.printf("\nPlayer[#%d] now chooses which hands you want to act on:\n", player.getId());
         List<HandCard> handCards = player.getHandCardList();
-        System.out.println("Your hands are as following:");
+        System.out.println("Your hands are as following:\n");
         for (int i = 0; i < handCards.size(); i++) {
-            System.out.printf("Hand[#%d]\n", i);
+            System.out.printf("Hand[#%d]: ", i);
             System.out.println(handCards.get(i));
         }
-        String input = ScanUtils.scanString();
-        String[] ids = input.split(" ");
-        int[] res = new int[ids.length];
-        for (int i = 0; i < res.length; i++) {
-            res[i] = Integer.parseInt(ids[i]);
-        }
+
+
+        boolean valid;
+        int[] res;
+        do {
+            valid = true;
+            System.out.print("(input eg: 0 2 3) >>> ");
+            String input = ScanUtils.scanString();
+            String[] ids = input.split(" ");
+
+            res = new int[ids.length];
+            for (int i = 0; i < res.length; i++) {
+                res[i] = Integer.parseInt(ids[i]);
+                if (res[i] < 0 || res[i] >= handCards.size()) {
+                    System.out.println("Invalid input, please enter again.");
+                    valid = false;
+                    break;
+                }
+            }
+
+        }while (!valid);
         return res;
+//        return null;
     }
 
     private void askBet(BJPlayer player) {
         double minBet = 1;
 
         int nHands = player.getHandCardList().size();
-        System.out.printf("\nPlayer[#%d] now enters the bet:\n", player.getId());
 
         for (int i = 0; i < nHands; i++) {
             if (!player.isBankrupt()) {
                 HandCard handCard = player.getHandCardList().get(i);
                 // already has a bet
-                if (handCard.getBetAmount() >= 0) continue;
-
-                System.out.printf("\nPlayer[#%d] HandCard[#%d]: %s\nInput bet >>> ", player.getId(), i, handCard);
+                if (handCard.getBetAmount() > 0) continue;
+                
+                System.out.printf("\nPlayer[#%d] now enters the bet:\n", player.getId());
+                System.out.printf("\nPlayer[#%d] HandCard[#%d]: %s\n\nInput bet for this hand >>> ", player.getId(), i, handCard);
                 double bet = ScanUtils.scanDouble(minBet, player.getDeposit() - (nHands - i) * minBet);
                 handCard.setBetAmount(bet);
                 player.updateDeposit(player.updateBet(bet));
@@ -207,10 +223,18 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
             if (curPlayerIndex == 0)    countStand = 0;
 
             String choice = chooseAction(curPlayer);
+            if (choice.equals(StandAction.ACTION_NAME)) {
+                countStand++;
+                printHandsOfCurPlayer();
+                nextTurn(curPlayer);
+                continue;
+            }
+
             int[] actOnIds = chooseActOn(curPlayer);
 
             curPlayer.takeAction(bjDealer, choice, actOnIds);
             askBet(curPlayer);
+            printHandsOfCurPlayer();
 
             if (curPlayer.getLastAction().equals(StandAction.ACTION_NAME)
                     || choice.equals(SplitAction.ACTION_NAME)
@@ -226,6 +250,8 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         while (bjDealer.getHandCard().getTotalPoints() <= 17) {
             bjDealer.getHandCard().addCard(bjDealer.deal(faceUp), true);
         }
+        System.out.printf("Dealer's Hand Cards are as following: %s\n", bjDealer.getHandCard());
+
         checkWin();
     }
 
@@ -292,5 +318,15 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
      */
     private boolean isNaturalBlackJack(HandCard handCard) {
     	return handCard.getHandCardList().size() == 2 && handCard.getTotalPoints() == 21;
+    }
+    
+    private void printHandsOfCurPlayer() {
+        List<HandCard> handCards = curPlayer.getHandCardList();
+        int nHands = handCards.size();
+
+        for (int i = 0; i < nHands; i++) {
+            HandCard handCard = handCards.get(i);
+            System.out.printf("\nPlayer[#%d] HandCard[#%d]: %s\n", curPlayer.getId(), i, handCard);
+        }
     }
 }
