@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @className: TEGame
@@ -92,6 +95,8 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
         // clear hand cards
         clearAllPlayersHandCard();
         clearDealerHandCard();
+        // reset current player
+        resetCurrentPlayer();
         // deal new cards
         dealInitialCard();
         setPlayerBetting();
@@ -540,15 +545,17 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     }
 
     private void clearHandCard(HandCard handCard) {
-        List<Card> cardList = handCard.getHandCardList();
-        Iterator<Card> iterator = cardList.iterator();
-        // remove cards
-        while (iterator.hasNext()) {
-            iterator.remove();
+        while (!handCard.getHandCardList().isEmpty()) {
+            handCard.removeCard(0);
         }
         // recalculate point
         handCard.calTotalPoints();
         handCard.updateBusted();
+    }
+
+    private void resetCurrentPlayer() {
+        this.curPlayerIndex = 0;
+        this.curPlayer = this.tePlayerList.get(this.curPlayerIndex);
     }
 
 }
