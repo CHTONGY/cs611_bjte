@@ -39,7 +39,7 @@ public class Controller {
     }
 
     private static TEGame createTEGame() {
-        System.out.println("Enter number of players going to attend:");
+        System.out.println("Enter number of players going to attend (including dealer):");
         int playerNum = ScanUtils.scanInt(2, Integer.MAX_VALUE);
         TEGame teGame = new TEGame(playerNum);
         return teGame;
