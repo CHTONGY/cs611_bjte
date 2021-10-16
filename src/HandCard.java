@@ -6,7 +6,6 @@ import java.util.*;
  * @author: You Peng
  **/
 
-
 public class HandCard {
 
     private List<Card> handCardList;
@@ -108,6 +107,14 @@ public class HandCard {
         return removeCard(index);
     }
 
+    /**
+     * Automatically choose a faceValue of Card that is less possible to be busted.
+     *
+     * @param handCard The hand to add the card into.
+     * @param card The card to be added into a hand.
+     * @return The Card after being checked.
+     * @author You Peng
+     */
     public Card checkCard(HandCard handCard, Card card) {
         if (card.getFaceValue() > 10) {
             card.setFaceValue(10);
