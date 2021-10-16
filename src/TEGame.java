@@ -232,8 +232,8 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     	System.out.println("\nAfter this round:");
     	printRank();
         
-    	sortPlayersByDeposit();
-    	if(teDealer.getDeposit()>tePlayerList.get(0).getDeposit()) {
+//    	sortPlayersByDeposit();
+    	if(teDealer.getDeposit()>sortPlayersByDeposit().get(0).getDeposit()) {
     		System.out.println("\nBanker still holds the largest deposit, so Banker stick to his current role for the next round\n");
     	}else {
     		TEPlayer playerTobeDealer = askToBeDealer();
@@ -257,9 +257,9 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      */
     private void printRank() {
     	System.out.println("Banker's deposit is " + teDealer.getDeposit());
-    	sortPlayersByDeposit();
+//    	sortPlayersByDeposit();
     	System.out.println("The rank list of deposit is shown as below:");
-    	for(TEPlayer player : tePlayerList) {
+    	for(TEPlayer player : sortPlayersByDeposit()) {
     		System.out.println("Player No." + player.getId() + " holds " + player.getDeposit());
     	}
     }
@@ -359,20 +359,22 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      * @return: true if it is a card game
      * @Author: Fangxu Zhou
      */
-    private void sortPlayersByDeposit(){
-    	Collections.sort(this.tePlayerList, new Comparator<TEPlayer>() {
+    private List<TEPlayer> sortPlayersByDeposit(){
+    	List<TEPlayer> sortedPlayerList=new ArrayList<TEPlayer>(tePlayerList); 
+    	Collections.sort(tePlayerList, new Comparator<TEPlayer>() {
 			@Override
 			public int compare(TEPlayer p1, TEPlayer p2) {
 				// TODO Auto-generated method stub
 				double diff = p1.getDeposit() - p2.getDeposit();
 				if(diff<0) {
-					return -1;
-				}else if(diff>0) {
 					return 1;
+				}else if(diff>0) {
+					return -1;
 				}
 				return 0;
 			}
     	});
+    	return sortedPlayerList;
     }
     
     
