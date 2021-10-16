@@ -52,17 +52,17 @@ public class TEDealer extends Dealer {
     private void dealFaceValue(Card card) {
         String cardSymbol = card.getSymbol();
         if (cardSymbol.equalsIgnoreCase("A")) {
-            boolean hasA = false;
+            boolean hasA1 = false;
             List<Card> cards = this.getHandCard().getHandCardList();
             for (Card c : cards) {
-                if (c.getSymbol().equalsIgnoreCase("A")) {
-                    hasA = true;
+                if (c != card && c.getSymbol().equalsIgnoreCase("A") && c.getFaceValue() == 1) {
+                    hasA1 = true;
                     break;
                 }
             }
-            if (hasA) {
+            if (hasA1) {
                 card.setFaceValue(11);
-            } else if (this.getHandCard().getTotalPoints() + 11 <= 31) {
+            } else if (this.getHandCard().getTotalPoints() + 10 <= 31) {
                 card.setFaceValue(11);
             } else {
                 card.setFaceValue(1);

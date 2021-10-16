@@ -42,17 +42,18 @@ public class TEPlayer extends CardPlayer {
     private void dealFaceValue(Card card) {
         String cardSymbol = card.getSymbol();
         if (cardSymbol.equalsIgnoreCase("A")) {
-            boolean hasA = false;
+            boolean hasA1 = false;
             List<Card> cards = this.getHandCardList().get(0).getHandCardList();
             for (Card c : cards) {
-                if (c.getSymbol().equalsIgnoreCase("A")) {
-                    hasA = true;
+                if (c.getSymbol().equalsIgnoreCase("A") && c.getFaceValue() == 1) {
+                    hasA1 = true;
                     break;
                 }
             }
-            if (hasA) {
+            if (hasA1) {
                 card.setFaceValue(11);
-            } else if (this.getHandCardList().get(0).getTotalPoints() + 11 <= 31) {
+            } else if (this.getHandCardList().get(0).getTotalPoints() + 10 <= 31) {
+                // we add 10 in if statement, because at first A=1, so if it becomes 11, it adds 10
                 card.setFaceValue(11);
             } else {
                 card.setFaceValue(1);
