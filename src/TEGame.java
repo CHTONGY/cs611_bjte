@@ -202,7 +202,7 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
     	int dealerPts = dealerHandCard.getTotalPoints();
     	
     	//Dealer has a natural Trianta Ena
-    	if(dealerPts == 31 && isNaturalTriantaEna(dealerHandCard.getHandCardList())) {
+    	if(isNaturalTriantaEna(dealerHandCard)) {
     		//Rule: "A natural 31 of the Banker results in the Banker winning the bets from all players."
     		System.out.println("Banker got a natural Trienta Ena, Banker wins agaisnt all the players");
     		dealerWinAgainstAll();
@@ -216,7 +216,9 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
             		//OR (while he's not busted, Banker is busted; to note: if both Player and Banker busted, Player loses) 
             		//OR (he has a natural Trianta Ena)
             		Boolean playerWon = (!playerHandCard.isBusted() && (playerPts > dealerPts || dealerHandCard.isBusted()))
-            							|| isNaturalTriantaEna(playerHandCard.getHandCardList());
+            							||isNaturalTriantaEna(playerHandCard);
+
+        			System.out.println("Dpts = " + dealerPts + "; Ppts = " + playerPts);
             		if(playerWon){
             			System.out.println("Player No." + player.getId() + " wins against Banker");
             			playerWinAgainstDealer(player);
@@ -270,10 +272,12 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      * @return: boolean: true if it is
      * @Author: Fangxu Zhou
      */
-    private boolean isNaturalTriantaEna(List<Card> handCardLst) {
+    private boolean isNaturalTriantaEna(HandCard handCard) {
     	// for a handcard to be a natural TE, it should have one Ace, two faces, so it should have three cards
-    	if(handCardLst.size() == 3) {
-    		for(Card hc: handCardLst) {
+    	int handCardPts = handCard.getTotalPoints();
+    	List<Card> handCardList = handCard.getHandCardList();
+    	if(handCardPts == 31 && handCardList.size() == 3) {
+    		for(Card hc: handCardList) {
     			// if among these three cards, one card has a face value as 9, then this hand card is not a natural TE
     			if(hc.getFaceValue() == 9) {
     				return false;
