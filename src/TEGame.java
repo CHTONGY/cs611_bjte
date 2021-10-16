@@ -410,18 +410,19 @@ public class TEGame implements Game, CardGame, TurnBasedGame<TEPlayer>, Winnable
      * @Author: Fangxu Zhou
      */
     private void exchangeRoles(TEPlayer playerTobeDealer) {
-    	// transfer the dealer to a new player
-    	TEPlayer newPlayer = new TEPlayer(playerTobeDealer.getId());
-    	newPlayer.setDeposit(teDealer.getDeposit());
-    	newPlayer.setHandCardList(new ArrayList<HandCard>());
-    	tePlayerList.remove(playerTobeDealer);
-    	tePlayerList.add(newPlayer);
-    	
-    	// transfer the player to a deaterr
-    	TEDealer newDealer = new TEDealer();
-    	newDealer.setDeposit(playerTobeDealer.getDeposit());
-    	newDealer.setHandCard(new HandCard(31));
-    	setTEDealer(newDealer);	
+        // transfer the dealer to a new player
+        TEPlayer newPlayer = new TEPlayer(playerTobeDealer.getId());
+        newPlayer.setDeposit(teDealer.getDeposit());
+        newPlayer.setHandCardList(new ArrayList<>());
+        newPlayer.getHandCardList().add(new HandCard(31));
+        tePlayerList.remove(playerTobeDealer);
+        tePlayerList.add(newPlayer);
+
+        // transfer the player to a deaterr
+        TEDealer newDealer = new TEDealer();
+        newDealer.setDeposit(playerTobeDealer.getDeposit());
+        newDealer.setHandCard(new HandCard(31));
+        setTEDealer(newDealer);
     }
     
 

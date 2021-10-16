@@ -45,7 +45,7 @@ public class TEPlayer extends CardPlayer {
             boolean hasA1 = false;
             List<Card> cards = this.getHandCardList().get(0).getHandCardList();
             for (Card c : cards) {
-                if (c.getSymbol().equalsIgnoreCase("A") && c.getFaceValue() == 1) {
+                if (c != card && c.getSymbol().equalsIgnoreCase("A") && c.getFaceValue() == 1) {
                     hasA1 = true;
                     break;
                 }
