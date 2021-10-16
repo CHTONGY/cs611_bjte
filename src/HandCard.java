@@ -116,7 +116,7 @@ public class HandCard {
      * @author You Peng
      */
     public Card checkCard(HandCard handCard, Card card) {
-        if (card.getFaceValue() > 10) {
+        if (card.getSymbol().equals("J") || card.getSymbol().equals("Q") ||card.getSymbol().equals("K")) {
             card.setFaceValue(10);
         }
         else if (card.getSymbol().equals("A")) {

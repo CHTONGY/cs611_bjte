@@ -74,10 +74,18 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         }
         resetCurPlayer();
     }
-    
-    public void resetCurPlayer() {
+
+    private void resetCurPlayer() {
         curPlayerIndex = 0;
         curPlayer = players.get(curPlayerIndex);
+    }
+
+    private void resetHands() {
+        for (BJPlayer player: players) {
+            player.getHandCardList().clear();
+            player.getHandCardList().add(new HandCard(21));
+        }
+        bjDealer.setHandCard(new HandCard(21));
     }
 
     /**
@@ -91,9 +99,11 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         // game begins
         init();
         while (hasNextRound()) {
+            System.out.println("\n==================================New Round!==================================\n");
+            resetHands();
             nextRound();
         }
-
+        System.out.println("\n=====================Somebody was bankrupt! Black Jack ends!=====================\n");
     }
 
     private String chooseAction(BJPlayer player) {
@@ -157,7 +167,7 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
                 
                 System.out.printf("\nPlayer[#%d] now enters the bet:\n", player.getId());
                 System.out.printf("\nPlayer[#%d] HandCard[#%d]: %s\n\nInput bet for this hand >>> ", player.getId(), i, handCard);
-                double bet = ScanUtils.scanDouble(minBet, player.getDeposit() - (nHands - i) * minBet);
+                double bet = ScanUtils.scanDouble(minBet, player.getDeposit() - (nHands - i - 1) * minBet);
                 handCard.setBetAmount(bet);
                 player.updateDeposit(player.updateBet(bet));
             }
@@ -203,7 +213,6 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
     @Override
     public void nextRound() {
         // TODO:
-
         boolean faceUp = true;
         boolean faceDown = false;
 
@@ -213,7 +222,7 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
         for (BJPlayer player: players) {
             player.getHandCardList().get(0).addCard(bjDealer.deal(faceUp), true);
             player.getHandCardList().get(0).addCard(bjDealer.deal(faceDown), true);
-
+            printHandsOfCurPlayer();
             askBet(player);
         }
         
@@ -262,58 +271,58 @@ public class BJGame implements Game, CardGame, TurnBasedGame<BJPlayer>, Winnable
      */
     @Override
     public void checkWin() {
-    	// loop in players
+        // loop in players
         for(BJPlayer player : players) {
 //        	System.out.println("This player's deposit is "+player.getDeposit());
-        	if(!player.isBankrupt()) {
-        		// if the player'not bankrupt, loop in all of his hand card lists
-        		for(HandCard playerHandCard: player.getHandCardList()) {
-        			// get data of player
-        			int playerPts = playerHandCard.getTotalPoints();
-        			double playerDeposit = player.getDeposit();
-        			double playerBetting =  player.getBetting();
-        			// get data of dealer
-        			HandCard dealerHandCard = bjDealer.getHandCard();
-        			int dealerPts = dealerHandCard.getTotalPoints();
-        			// win or lose cases of a player's hand card
-        			boolean playerWon = (!playerHandCard.isBusted() && ((playerPts > dealerPts) || bjDealer.getHandCard().isBusted()))
-    						|| (playerPts == dealerPts && isNaturalBlackJack(playerHandCard) && !isNaturalBlackJack(dealerHandCard));
-        			boolean playerLosed = (playerHandCard.isBusted() || playerPts < dealerPts)
-    						|| (playerPts == dealerPts && !isNaturalBlackJack(playerHandCard) && isNaturalBlackJack(dealerHandCard));
-            		System.out.println("This hand card of Player No." + player.getId() + " has total points as " + playerPts);
-            		System.out.println("Dealer's hand card has total points as " + dealerPts);
-        			if(playerWon) {
-            			System.out.println("Player No." + player.getId() + "wins! ");
-            			if (isNaturalBlackJack(playerHandCard)) 
-            				System.out.println("Winning with a natural BlackJack");
-            			player.setDeposit(playerDeposit + playerBetting * 2);
-            			System.out.println("Winning with a bet amount as " + player.getBetting());
-            			System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
-            			playerHandCard.setWinStatus(1);
-            		}else if(playerLosed) {
-            			System.out.println("Player No." + player.getId() + " loses.. Dealer wins..");
+            if(!player.isBankrupt()) {
+                // if the player'not bankrupt, loop in all of his hand card lists
+                for(HandCard playerHandCard: player.getHandCardList()) {
+                    // get data of player
+                    int playerPts = playerHandCard.getTotalPoints();
+                    double playerDeposit = player.getDeposit();
+                    double playerBetting =  player.getBetting();
+                    // get data of dealer
+                    HandCard dealerHandCard = bjDealer.getHandCard();
+                    int dealerPts = dealerHandCard.getTotalPoints();
+                    // win or lose cases of a player's hand card
+                    boolean playerWon = (!playerHandCard.isBusted() && ((playerPts > dealerPts) || bjDealer.getHandCard().isBusted()))
+                            || (playerPts == dealerPts && isNaturalBlackJack(playerHandCard) && !isNaturalBlackJack(dealerHandCard));
+                    boolean playerLosed = (playerHandCard.isBusted() || playerPts < dealerPts)
+                            || (playerPts == dealerPts && !isNaturalBlackJack(playerHandCard) && isNaturalBlackJack(dealerHandCard));
+                    System.out.println("This hand card of Player No." + player.getId() + " has total points as " + playerPts);
+                    System.out.println("Dealer's hand card has total points as " + dealerPts);
+                    if(playerWon) {
+                        System.out.println("Player No." + player.getId() + "wins! ");
+                        if (isNaturalBlackJack(playerHandCard))
+                            System.out.println("Winning with a natural BlackJack");
+                        player.setDeposit(playerDeposit + playerBetting * 2);
+                        System.out.println("Winning with a bet amount as " + player.getBetting());
+                        System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
+                        playerHandCard.setWinStatus(1);
+                    }else if(playerLosed) {
+                        System.out.println("Player No." + player.getId() + " loses.. Dealer wins..");
 //            			System.out.println("The player's deposit is " + playerDeposit);
 //            			System.out.println("The player's deposit is " + playerBetting);
-            			if (isNaturalBlackJack(dealerHandCard))
-            				System.out.println("Losing by a natural BlackJack of Dealer");
+                        if (isNaturalBlackJack(dealerHandCard))
+                            System.out.println("Losing by a natural BlackJack of Dealer");
 //            			if (playerDeposit > playerBetting)
 //            				player.setDeposit(playerDeposit - playerBetting);
 //            			else
 //            				player.setDeposit(0);
-            			System.out.println("Losing with a bet amount as " + player.getBetting());
-            			System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
-            			playerHandCard.setWinStatus(-1);
-            		}else {
-            			playerHandCard.setWinStatus(0);
-            			if (isNaturalBlackJack(playerHandCard) && isNaturalBlackJack(dealerHandCard))
-            				System.out.println("Both Player and Dealer hold a natural BlackJack");
-            			System.out.println("This round ends in a tie");
-            			System.out.println("The bet with amount as " + player.getBetting() + " of Player No." + player.getId() + "returns");
-            			System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
-            		}
-            	}
-        	}
-        	
+                        System.out.println("Losing with a bet amount as " + player.getBetting());
+                        System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
+                        playerHandCard.setWinStatus(-1);
+                    }else {
+                        playerHandCard.setWinStatus(0);
+                        if (isNaturalBlackJack(playerHandCard) && isNaturalBlackJack(dealerHandCard))
+                            System.out.println("Both Player and Dealer hold a natural BlackJack");
+                        System.out.println("This round ends in a tie");
+                        System.out.println("The bet with amount as " + player.getBetting() + " of Player No." + player.getId() + "returns");
+                        System.out.println("Player No." + player.getId() + " now has deposit as " + player.getDeposit());
+                    }
+                }
+            }
+
         }
     }
     
